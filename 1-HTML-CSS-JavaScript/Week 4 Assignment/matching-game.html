@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Matching Game</title>
+    <style>
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            height: 100%;
+            margin: 0;
+            background: rgb(34,193,195);
+            background: linear-gradient(0deg, rgba(34,193,195,1) 0%, rgba(177,45,253,1) 100%);
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        img {
+            position: absolute;
+        }
+        div {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+        }
+        #rightSide {
+            left: 500px;
+            border-left: 1px solid;
+        }
+        h1 {
+            position: relative;
+            text-align: center;
+        }
+        p {
+            position: relative;
+            text-align: center;
+            font-weight: bold;
+        }
+        button {
+            border-radius: 12px;
+            border: 1px black solid;
+            padding: 20px;
+            font-size: 16px;
+        }
+        button:hover {
+            box-shadow: 0 8px 16px 0 rgba(0,0,0,0.3), 0 6px 20px 0 rgba(0,0,0,0.19);;
+        }
+    </style>
+</head>
+<body>
+    <h1>Matching Game</h1>
+    <p>
+    Click on the extra smiling face on the left side.
+    </p>
+    <p><button id="gameButton" type="button" onclick="startGame()">Start Game</button></p>
+    <div id="leftSide"></div>
+    <div id="rightSide"></div>
+    <script>        
+        const theLeftSide = document.getElementById('leftSide');
+        let theRightSide = document.getElementById('rightSide');
+        let tries = 0;
+        var originalFaces;
+        let numberOfFaces = 0;
+
+        function startGame() {
+            do {
+                originalFaces = prompt('How many faces would you like to see?')
+            }
+            while (isNaN(originalFaces));
+            originalFaces = parseInt(originalFaces);
+            numberOfFaces = originalFaces
+            alert('Good luck!');
+            generateFaces(numberOfFaces);
+        }
+
+        function generateFaces(numberOfFaces) {
+            for (let i = 1; i <= numberOfFaces; i++) {
+                let face = document.createElement('img');
+                face.src = '../Images/smile.png';
+                let randomTop = Math.floor(Math.random() * 400) + 1;
+                let randomLeft = Math.floor(Math.random() * 400) + 1;
+                face.style.top = randomTop + 'px';
+                face.style.left = randomLeft + 'px';
+                theLeftSide.appendChild(face);
+            }
+            let leftSideImages = theLeftSide.cloneNode(true);
+            leftSideImages.removeChild(leftSideImages.lastChild);
+            theRightSide.appendChild(leftSideImages);
+            theLeftSide.addEventListener('click',gameOver);
+            theLeftSide.lastChild.removeEventListener('click',gameOver);
+            theLeftSide.lastChild.addEventListener('click',nextLevel);
+        }
+
+        function nextLevel(event) {
+            event.stopPropagation();
+            numberOfFaces += originalFaces;
+            while (theLeftSide.hasChildNodes()) {
+                theLeftSide.removeChild(theLeftSide.firstChild);
+            }
+            while (theRightSide.hasChildNodes()) {
+                theRightSide.removeChild(theRightSide.firstChild);
+            }
+            tries += 1
+            generateFaces(numberOfFaces);
+        }
+
+        function gameOver() {
+            alert('Game Over!\n\nYou were correct ' + tries + ' times!\n\nYou failed on ' + numberOfFaces + ' faces.');
+            theLeftSide.removeEventListener('click',gameOver);
+            theLeftSide.lastChild.removeEventListener('click',nextLevel);
+            while (theLeftSide.hasChildNodes()) {
+                theLeftSide.removeChild(theLeftSide.firstChild);
+            }
+            while (theRightSide.hasChildNodes()) {
+                theRightSide.removeChild(theRightSide.firstChild);
+            }
+            document.getElementById('gameButton').textContent = 'Retry?';
+            tries = 0;
+        }
+    </script>
+</body>
+</html>
